@@ -228,24 +228,49 @@ Once the container or server is running, you can access the API docs in your bro
 ]
 ```
 
+Below is a more refined, explanatory write-up describing the two suggestion-generation approaches—regex-based and AI-based—currently implemented in this API.
+
+---
+
 ## Smart Task Suggestions
 
-Multiple viable techniques could've been used such as TF-IDF, SentenceTransformers, Clustering, Markov chains, etc.
+A variety of techniques could be employed to generate task suggestions, including TF-IDF, SentenceTransformers, Clustering, Markov chains, and more. Within this project, we have focused on **two** primary methods:
 
-This API uses a Regex-based and an AI-based approach.
+1. **A Regex-based approach**
+2. **An AI-driven approach**
 
-Regex-based approach:
+### 1. Regex-based Approach
 
-- The code looks for patterns of the form "Project X Review", "Project X Follow-up Meeting", and "Project X Finalization".
-- Identifies the "stages" each project has. If a stage is missing (e.g., no follow-up meeting yet after a review), it suggests that stage.
-- Rudimentary pattern-based system. For more generic or flexible tasks, the regex won’t catch them.
+- **Pattern Recognition**  
+  The system looks for task titles of the form:  
 
-AI-based approach:
+  ```text
+  Project <ProjectName> Review
+  Project <ProjectName> Follow-up Meeting
+  Project <ProjectName> Finalization
+  ```
 
-- Uses distilgpt2 to generate text based on recent “completed” tasks. The prompt is constructed by listing known tasks, then asking the model for a “Related new task.”
-- The result is then parsed to remove extraneous lines or duplication.
-- Uses Hugging Face Transformers for text generation.
-- Extracts up to 10 recently completed tasks (some notion of recency).
-- The logic filters out short or duplicate suggestions.
+- **Sequential Stage Detection**  
+  Each "Project ProjectName" can have up to three primary "stages" (review, follow-up, finalization). If the system detects an earlier stage without its subsequent stage—for instance, a review is completed but there is no follow-up meeting scheduled—it will suggest adding that missing stage.
+
+### 2. AI-based Approach
+
+- **Model and Prompt Construction**  
+  The AI-based suggestion engine uses the **distilgpt2** model from Hugging Face. The prompt includes up to 10 recent "completed" tasks, followed by a request such as:  
+
+  ```text
+  Existing tasks:
+  <list of tasks>
+
+  Related new task:
+  ```
+
+- **Generating and Filtering Outputs**  
+  The model creates text based on the prompt. We then parse and clean the generated output to remove irrelevant content, repeated lines, or extremely short suggestions. Any duplicates of existing tasks are also discarded.  
+
+### Why Two Approaches?
+
+- The **regex-based method** is fast, reliable for standard task sequences, and easy to adapt to well-known patterns.  
+- The **AI-based method** handles more varied suggestions and can creatively propose tasks that are not explicitly defined in a pattern library.
 
 ## [License](./LICENSE)
