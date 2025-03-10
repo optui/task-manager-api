@@ -228,10 +228,6 @@ Once the container or server is running, you can access the API docs in your bro
 ]
 ```
 
-Below is a more refined, explanatory write-up describing the two suggestion-generation approaches—regex-based and AI-based—currently implemented in this API.
-
----
-
 ## Smart Task Suggestions
 
 A variety of techniques could be employed to generate task suggestions, including TF-IDF, SentenceTransformers, Clustering, Markov chains, and more. Within this project, we have focused on **two** primary methods:
